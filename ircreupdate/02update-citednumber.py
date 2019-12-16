@@ -7,7 +7,7 @@ def main():
     import bibtexparser
     from bibtexparser.bwriter import BibTexWriter
 
-    with open('clusterid-added-ircre.bib', encoding='utf8') as bibtex_file:
+    with open('ircre.bib', encoding='utf8') as bibtex_file:
         bib_database = bibtexparser.load(bibtex_file)
 
     entries = bib_database.entries
@@ -23,7 +23,8 @@ def main():
     writer.indent = '    '
     writer.order_entries_by = ('order',)
 
-    for i in range(len(entries)):
+    for n in range(len(entries)-100):
+        i = n + 100
         print("---------------------------")
         print("Entry number: " + str(i))
         title = entries[i]['title']
