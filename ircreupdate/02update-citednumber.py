@@ -23,6 +23,12 @@ def main():
     writer.indent = '    '
     writer.order_entries_by = ('order',)
 
+    articleentries = []
+
+    for i in range(len(entries)):
+        if entries[i]['ENTRYTYPE'] == 'article':
+            articleentries.append(entries[i].copy())
+
     for n in range(len(entries)-100):
         i = n + 100
         print("---------------------------")
@@ -55,7 +61,7 @@ def main():
 
         if not citations == "unknown":
             citednumber = int(citations)
-            if citednumber > oldcitednumber:
+            if citednumber > oldcitednumber and ((citednumber - oldcitednumber) < 8) :
                 entries[i]['cited'] = str(citednumber)
 
         with open('cited-add-ircre.bib', 'w', encoding='utf8') as newbibfile:

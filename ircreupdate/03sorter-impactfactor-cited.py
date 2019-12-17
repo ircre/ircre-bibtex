@@ -115,6 +115,7 @@ def main():
 
 
     alldb = BibDatabase()
+
     entries = []
 
     for i in range(len(toparticles)):
@@ -123,8 +124,6 @@ def main():
     for i in range(len(sorted_by_journalimpactor_cited)):
         entries.append(sorted_by_journalimpactor_cited[i].copy())
 
-    print(entries[14])
-    print(entries[15])
     alldb.entries = entries
     writer.order_entries_by = None
 
