@@ -303,7 +303,7 @@ def main():
 
     # entryadd()
 
-    #getclusterid()
+    # getclusterid()
 
     # 更新引用次数
     getcitation()
