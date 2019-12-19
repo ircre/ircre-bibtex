@@ -24,11 +24,16 @@ def openproxy():
 def bibtexfilecopy():
     dt = datetime.now()
     ircrebibwebsitefile = '/srv/main-websites/ircre/js/ircre.bib'
+    ircrestatwebsitefile = '/srv/main-websites/ircre/js/statistics.js'
     currentdir = os.getcwd()
     os.system(
         '''cd ''' + currentdir + ''';''' +
         '''cp ''' + ircrebibwebsitefile + ''' ''' + currentdir + '''/ -f ; cp ircre.bib ircre'''
         + str(dt.year) + str(dt.month) + str(dt.day) + '''.bib;''')
+    os.system(
+        '''cd ''' + currentdir + ''';''' +
+        '''cp ''' + ircrestatwebsitefile + ''' ''' + currentdir + '''/ -f ; cp statistics.js statistics'''
+        + str(dt.year) + str(dt.month) + str(dt.day) + '''.js;''')
     return 0
 
 
@@ -79,7 +84,7 @@ def articlessort():
         except:
             articles[i]['sortkey2'] = int(0)
 
-    sorted_by_journalif_cited = sorted(articles, key=lambda x: (x['sortkey1'], x['sortkey2'], x['year']),
+    sorted_by_journalif_cited = sorted(articles, key=lambda x: (x['sortkey1'], x['journal'], x['sortkey2'], x['year']),
                                        reverse=True)
 
     for i in range(len(sorted_by_journalif_cited)):
@@ -289,11 +294,84 @@ def entryadd(doi):
 
 
 def updatestatistics():
-    pass
+    articlesparser = BibTexParser(common_strings=False)
+    articlesparser.ignore_nonstandard_types = False
+    with open('articles.bib', encoding='utf8') as articlesfile:
+        articles_database = bibtexparser.load(articlesfile, articlesparser)
+
+    articleentries = articles_database.entries
+    totalcitations = 0
+    totalif = 0.0
+    citationlist = []
+    jourallist = []
+    hihonumber = 0
+    totalpublications = len(articleentries) + 28
+    totalarticles = len(articleentries)
+    for i in range(len(articleentries)):
+
+        if 'cited' in articleentries[i]:
+            citednumber = int(articleentries[i]['cited'])
+        else:
+            citednumber = 0
+        if 'impactfactor' in articleentries[i]:
+            impactfactor = float(articleentries[i]['impactfactor'])
+        else:
+            impactfactor = 0.0
+
+        if 'hihosubject' in articleentries[i]:
+            hihonumber = hihonumber + 1
+
+        citationlist.append(citednumber)
+        jourallist.append(articleentries[i]['journal'])
+        totalcitations = totalcitations + citednumber
+        totalif = totalif + impactfactor
+    hindex = Hindex(citationlist)
+    i10index = I10index(citationlist)
+    totalcitations = totalcitations + 14
+    citationperpaper = totalcitations / len(articleentries)
+    journalnumber = len(set(jourallist))
+    averageif = totalif / len(articleentries)
+    # print(totalcitations)
+    # print(hindex)
+    # print(i10index)
+    # print(citationperpaper)
+    # print(journalnumber)
+    # print(averageif)
+    # print(hihonumber)
+    # print(totalpublications)
+
+    with open('newstatistics.js', 'w', encoding='utf8') as statisticsjsfile:
+        statisticsjsfile.write('totalpublications = "%d";\n' % totalpublications)
+        statisticsjsfile.write('totalarticles = "%d";\n' % totalarticles)
+        statisticsjsfile.write('totalcitations = "%d";\n' % totalcitations)
+        statisticsjsfile.write('hindex = "%d";\n' % hindex)
+        statisticsjsfile.write('i10index = "%d";\n' % i10index)
+        statisticsjsfile.write('numberjournals = "%d";\n' % journalnumber)
+        statisticsjsfile.write('numberesihighlycited = "%d";\n' % hihonumber)
+        statisticsjsfile.write('citationperpaper = "%.2f";\n' % citationperpaper)
+        statisticsjsfile.write('averageif = "%.3f";\n' % averageif)
+    return 0
+
+
+def Hindex(citationlist):
+    indexSet = sorted(list(set(citationlist)), reverse=True)
+    for index in indexSet:
+        clist = [i for i in citationlist if i >= index]
+        if index <= len(clist):
+            break
+    return index
+
+
+def I10index(citationlist):
+    i10index = 0
+    for i in range(len(citationlist)):
+        if citationlist[i] >= 10:
+            i10index = i10index + 1
+    return i10index
 
 
 def main():
-    openproxy()
+    # openproxy()
 
     # 从网站目录复制bib文件
     bibtexfilecopy()
@@ -306,7 +384,7 @@ def main():
     # getclusterid()
 
     # 更新引用次数
-    getcitation()
+    # getcitation()
 
     # 按影响因子和引用次数对article排序，并取出top 15 most cited articles，
     articlessort()
