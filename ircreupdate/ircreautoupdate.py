@@ -240,8 +240,11 @@ def getcitation():
 
     articleentries = articles_database.entries
 
-    for n in range(len(articleentries) - 100):
-        i = n + 100
+    import random
+    samplelist = random.sample(range(len(articleentries)), 30)
+    print(samplelist)
+
+    for i in samplelist:
         print("---------------------------")
         print("Entry number: " + str(i))
         title = articleentries[i]['title']
@@ -281,9 +284,10 @@ def getcitation():
         with open('cited-add-articles.bib', 'w', encoding='utf8') as newarticlefile:
             bibtexparser.dump(articles_database, newarticlefile, writer=writer)
 
-        os.popen("cp cited-add-ircre.bib tempcited-add-ircre.bib")
+        os.popen("cp cited-add-articles.bib tempcited-add-articles.bib")
 
-    with open('cited-add-articles.bib', 'w', encoding='utf8') as newarticlefile:
+    os.popen("cp articles.bib oldarticles.bib")
+    with open('articles.bib', 'w', encoding='utf8') as newarticlefile:
         bibtexparser.dump(articles_database, newarticlefile, writer=writer)
 
     return 0
@@ -370,6 +374,19 @@ def I10index(citationlist):
     return i10index
 
 
+def filecopyback():
+    ircrebibwebsitefile = '/srv/main-websites/ircre/js/ircre.bib'
+    ircrestatwebsitefile = '/srv/main-websites/ircre/js/statistics.js'
+    currentdir = os.getcwd()
+    os.system(
+        '''cd ''' + currentdir + ''';''' +
+        '''cp newircre.bib ''' + ircrebibwebsitefile + ''' -f ;''')
+    os.system(
+        '''cd ''' + currentdir + ''';''' +
+        '''cp newstatistics.js ''' + ircrestatwebsitefile + ''' -f ;''')
+    return 0
+
+
 def main():
     # openproxy()
 
@@ -384,7 +401,7 @@ def main():
     # getclusterid()
 
     # 更新引用次数
-    # getcitation()
+    getcitation()
 
     # 按影响因子和引用次数对article排序，并取出top 15 most cited articles，
     articlessort()
@@ -395,6 +412,8 @@ def main():
     ircrebibmerge()
 
     updatestatistics()
+
+    filecopyback()
 
     return 0
 
