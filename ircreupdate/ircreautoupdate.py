@@ -241,7 +241,7 @@ def getcitation():
     articleentries = articles_database.entries
 
     import random
-    samplelist = random.sample(range(len(articleentries)), 30)
+    samplelist = random.sample(range(len(articleentries)), 40)
     print(samplelist)
 
     for i in samplelist:

@@ -1104,7 +1104,7 @@ class ScholarQuerier(object):
 
             #req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
             self.opener.get(url)
-            time.sleep(120)
+            time.sleep(300)
             html = self.opener.page_source.encode('utf-8')
 
             ScholarUtils.log('debug', log_msg)
