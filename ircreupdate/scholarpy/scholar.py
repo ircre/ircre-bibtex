@@ -184,6 +184,7 @@ try:
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--proxy-server=socks5://localhost:9524')
+    chrome_options.add_argument('--disable-dev-shm-usage')
     chrome_options.add_argument("start-maximized")
     chrome_options.add_argument("user-data-dir={}".format(userProfile))
     chrome = webdriver.Chrome(options=chrome_options)
@@ -1104,7 +1105,7 @@ class ScholarQuerier(object):
 
             #req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
             self.opener.get(url)
-            time.sleep(300)
+            time.sleep(480)
             html = self.opener.page_source.encode('utf-8')
 
             ScholarUtils.log('debug', log_msg)

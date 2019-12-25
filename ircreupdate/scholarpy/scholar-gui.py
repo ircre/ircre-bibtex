@@ -182,6 +182,7 @@ try:
 
     #chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--window-size=1500,1000')
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--proxy-server=socks5://localhost:9524')
     chrome_options.add_argument("start-maximized")

@@ -25,7 +25,7 @@ def bibtexfilecopy():
     dt = datetime.now()
     ircrebibwebsitefile = '/srv/main-websites/ircre/js/ircre.bib'
     ircrestatwebsitefile = '/srv/main-websites/ircre/js/statistics.js'
-    currentdir = os.getcwd()
+    currentdir = '/home/limingtao/ircre-bibtex/ircreupdate'
     os.system(
         '''cd ''' + currentdir + ''';''' +
         '''cp ''' + ircrebibwebsitefile + ''' ''' + currentdir + '''/ -f ; cp ircre.bib ircre'''
@@ -41,7 +41,7 @@ def bibtexclassify():
     parser = BibTexParser(common_strings=False)
     parser.ignore_nonstandard_types = False
 
-    with open('ircre.bib', encoding='utf8') as bibtexfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/ircre.bib', encoding='utf8') as bibtexfile:
         ircrebib_database = bibtexparser.load(bibtexfile, parser)
 
     allentries = ircrebib_database.entries.copy()
@@ -59,8 +59,23 @@ def bibtexclassify():
     writer = BibTexWriter()
     writer.indent = '    '
     writer.order_entries_by = ('order',)
-    with open('articles.bib', 'w', encoding='utf8') as article_file:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', 'w', encoding='utf8') as article_file:
         bibtexparser.dump(article_database, article_file, writer=writer)
+
+    otherentries= []
+    for i in range(len(allentries)):
+        if allentries[i]['ENTRYTYPE'] == 'inbook' or allentries[i]['ENTRYTYPE'] == 'inproceedings' or allentries[i]['ENTRYTYPE'] == 'incollection':
+            otherentries.append(allentries[i].copy())
+
+    other_database = BibDatabase()
+    other_database.entries = otherentries
+
+    writer2 = BibTexWriter()
+    writer2.indent = '    '
+    writer2.order_entries_by = ('order',)
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/others.bib', 'w', encoding='utf8') as others_file:
+        bibtexparser.dump(other_database, others_file, writer=writer2)
+
 
     return 0
 
@@ -69,7 +84,7 @@ def articlessort():
     parser = BibTexParser(common_strings=False)
     parser.ignore_nonstandard_types = False
 
-    with open('articles.bib', encoding='utf8') as articlesfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', encoding='utf8') as articlesfile:
         articles_database = bibtexparser.load(articlesfile, parser)
 
     articles = articles_database.entries.copy()
@@ -100,7 +115,7 @@ def articlessort():
     writer = BibTexWriter()
     writer.indent = '    '
     writer.order_entries_by = ('order',)
-    with open('sorted-articles.bib', 'w', encoding='utf8') as sortedarticlesfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/sorted-articles.bib', 'w', encoding='utf8') as sortedarticlesfile:
         bibtexparser.dump(sortedarticlesdatabase, sortedarticlesfile, writer=writer)
 
     return 0
@@ -110,7 +125,7 @@ def getop15articles():
     parser = BibTexParser(common_strings=False)
     parser.ignore_nonstandard_types = False
 
-    with open('articles.bib', encoding='utf8') as article_file:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', encoding='utf8') as article_file:
         article_database = bibtexparser.load(article_file, parser)
 
     article_entries = article_database.entries.copy()
@@ -141,7 +156,7 @@ def getop15articles():
     writer.indent = '    '
     writer.order_entries_by = None
 
-    with open('top15.bib', 'w', encoding='utf8') as top15_file:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/top15.bib', 'w', encoding='utf8') as top15_file:
         bibtexparser.dump(top15_database, top15_file, writer=writer)
     return 0
 
@@ -150,7 +165,7 @@ def getclusterid(title, author):
     parser = BibTexParser(common_strings=False)
     parser.ignore_nonstandard_types = False
 
-    with open('articles.bib', encoding='utf8') as article_file:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', encoding='utf8') as article_file:
         article_database = bibtexparser.load(article_file, parser)
 
     article_entries = article_database.entries.copy()
@@ -177,18 +192,18 @@ def getclusterid(title, author):
             clusterid = ''
             try:
                 clusterid = os.popen(
-                    '''./scholarpy/scholar.py -c 1 -t --phrase="''' + title + '''" |grep ID| grep Cluster''').read().strip().split()[
+                    '''/home/limingtao/ircre-bibtex/ircreupdate/scholarpy/scholar.py -c 1 -t --phrase="''' + title + '''" |grep ID| grep Cluster''').read().strip().split()[
                     -1]
             except:
                 clusterid = "unknown"
 
             print("new Cluster ID: " + clusterid)
             entries[i]['clusterid'] = clusterid
-        with open('clusterid-added-ircre.bib', 'w', encoding='utf8') as newbibfile:
+        with open('/home/limingtao/ircre-bibtex/ircreupdate/clusterid-added-ircre.bib', 'w', encoding='utf8') as newbibfile:
             bibtexparser.dump(bib_database, newbibfile, writer=writer)
-        os.popen("cp clusterid-added-ircre.bib tempclusterid-added-ircre.bib")
+        os.popen("cp /home/limingtao/ircre-bibtex/ircreupdate/clusterid-added-ircre.bib /home/limingtao/ircre-bibtex/ircreupdate/tempclusterid-added-ircre.bib")
 
-    with open('clusterid-added-ircre.bib', 'w', encoding='utf8') as newbibfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/clusterid-added-ircre.bib', 'w', encoding='utf8') as newbibfile:
         bibtexparser.dump(bib_database, newbibfile, writer=writer)
 
     return 0
@@ -198,7 +213,7 @@ def ircrebibmerge():
     articlesparser = BibTexParser(common_strings=False)
     articlesparser.ignore_nonstandard_types = False
 
-    with open('sorted-articles.bib', encoding='utf8') as sortedarticle_file:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/sorted-articles.bib', encoding='utf8') as sortedarticle_file:
         sortedarticle_database = bibtexparser.load(sortedarticle_file, articlesparser)
 
     sortedarticles = sortedarticle_database.entries.copy()
@@ -206,10 +221,20 @@ def ircrebibmerge():
     top15parser = BibTexParser(common_strings=False)
     top15parser.ignore_nonstandard_types = False
 
-    with open('top15.bib', encoding='utf8') as top15_file:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/top15.bib', encoding='utf8') as top15_file:
         top15_database = bibtexparser.load(top15_file, top15parser)
 
     top15articles = top15_database.entries.copy()
+
+
+    othersparser = BibTexParser(common_strings = False)
+    othersparser.ignore_nonstandard_types = False
+
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/others.bib', encoding='utf8') as others_file:
+        others_database = bibtexparser.load(others_file, othersparser)
+
+    others = others_database.entries.copy()
+
 
     alldb = BibDatabase()
     entries = []
@@ -220,13 +245,16 @@ def ircrebibmerge():
     for i in range(len(sortedarticles)):
         entries.append(sortedarticles[i].copy())
 
+    for i in range(len(others)):
+        entries.append(others[i].copy())
+
     alldb.entries = entries
 
     writer = BibTexWriter()
     writer.indent = '    '
     writer.order_entries_by = None
 
-    with open('newircre.bib', 'w', encoding='utf8') as newircrebibfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/newircre.bib', 'w', encoding='utf8') as newircrebibfile:
         bibtexparser.dump(alldb, newircrebibfile, writer=writer)
 
     return 0
@@ -235,13 +263,13 @@ def ircrebibmerge():
 def getcitation():
     articlesparser = BibTexParser(common_strings=False)
     articlesparser.ignore_nonstandard_types = False
-    with open('articles.bib', encoding='utf8') as articlesfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', encoding='utf8') as articlesfile:
         articles_database = bibtexparser.load(articlesfile, articlesparser)
 
     articleentries = articles_database.entries
 
     import random
-    samplelist = random.sample(range(len(articleentries)), 40)
+    samplelist = random.sample(range(len(articleentries)), 20)
     print(samplelist)
 
     for i in samplelist:
@@ -256,7 +284,7 @@ def getcitation():
             print(str(i))
             try:
                 citations = os.popen(
-                    '''./scholarpy/scholar.py -c 1 -C ''' + clusterid + ''' |grep -v list |grep Citations''').read().strip().split()[
+                    '''/usr/bin/python3 /home/limingtao/ircre-bibtex/ircreupdate/scholarpy/scholar.py -c 1 -C ''' + clusterid + ''' |grep -v list |grep Citations''').read().strip().split()[
                     -1]
             except:
                 citations = "unknown"
@@ -281,13 +309,13 @@ def getcitation():
         writer.indent = '    '
         writer.order_entries_by = ('order',)
 
-        with open('cited-add-articles.bib', 'w', encoding='utf8') as newarticlefile:
+        with open('/home/limingtao/ircre-bibtex/ircreupdate/cited-add-articles.bib', 'w', encoding='utf8') as newarticlefile:
             bibtexparser.dump(articles_database, newarticlefile, writer=writer)
 
-        os.popen("cp cited-add-articles.bib tempcited-add-articles.bib")
+        os.popen("cp /home/limingtao/ircre-bibtex/ircreupdate/cited-add-articles.bib tempcited-add-articles.bib")
 
-    os.popen("cp articles.bib oldarticles.bib")
-    with open('articles.bib', 'w', encoding='utf8') as newarticlefile:
+    os.popen("cp /home/limingtao/ircre-bibtex/ircreupdate/articles.bib /home/limingtao/ircre-bibtex/ircreupdate/oldarticles.bib")
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', 'w', encoding='utf8') as newarticlefile:
         bibtexparser.dump(articles_database, newarticlefile, writer=writer)
 
     return 0
@@ -300,7 +328,7 @@ def entryadd(doi):
 def updatestatistics():
     articlesparser = BibTexParser(common_strings=False)
     articlesparser.ignore_nonstandard_types = False
-    with open('articles.bib', encoding='utf8') as articlesfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/articles.bib', encoding='utf8') as articlesfile:
         articles_database = bibtexparser.load(articlesfile, articlesparser)
 
     articleentries = articles_database.entries
@@ -331,7 +359,7 @@ def updatestatistics():
         totalif = totalif + impactfactor
     hindex = Hindex(citationlist)
     i10index = I10index(citationlist)
-    totalcitations = totalcitations + 14
+    totalcitations = totalcitations + 19
     citationperpaper = totalcitations / len(articleentries)
     journalnumber = len(set(jourallist))
     averageif = totalif / len(articleentries)
@@ -344,7 +372,7 @@ def updatestatistics():
     # print(hihonumber)
     # print(totalpublications)
 
-    with open('newstatistics.js', 'w', encoding='utf8') as statisticsjsfile:
+    with open('/home/limingtao/ircre-bibtex/ircreupdate/newstatistics.js', 'w', encoding='utf8') as statisticsjsfile:
         statisticsjsfile.write('totalpublications = "%d";\n' % totalpublications)
         statisticsjsfile.write('totalarticles = "%d";\n' % totalarticles)
         statisticsjsfile.write('totalcitations = "%d";\n' % totalcitations)
@@ -377,13 +405,13 @@ def I10index(citationlist):
 def filecopyback():
     ircrebibwebsitefile = '/srv/main-websites/ircre/js/ircre.bib'
     ircrestatwebsitefile = '/srv/main-websites/ircre/js/statistics.js'
-    currentdir = os.getcwd()
+    currentdir = '/home/limingtao/ircre-bibtex/ircreupdate'
     os.system(
         '''cd ''' + currentdir + ''';''' +
-        '''cp newircre.bib ''' + ircrebibwebsitefile + ''' -f ;''')
+        '''cp /home/limingtao/ircre-bibtex/ircreupdate/newircre.bib ''' + ircrebibwebsitefile + ''' -f ;''')
     os.system(
         '''cd ''' + currentdir + ''';''' +
-        '''cp newstatistics.js ''' + ircrestatwebsitefile + ''' -f ;''')
+        '''cp /home/limingtao/ircre-bibtex/ircreupdate/newstatistics.js ''' + ircrestatwebsitefile + ''' -f ;''')
     return 0
 
 
