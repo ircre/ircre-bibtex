@@ -414,6 +414,9 @@ def filecopyback():
         '''cp /home/limingtao/ircre-bibtex/ircreupdate/newstatistics.js ''' + ircrestatwebsitefile + ''' -f ;''')
     return 0
 
+def generatehtml
+    pass
+
 
 def main():
     # openproxy()
@@ -440,6 +443,8 @@ def main():
     ircrebibmerge()
 
     updatestatistics()
+
+    generatehtml()
 
     filecopyback()
 
